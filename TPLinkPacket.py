@@ -1,5 +1,5 @@
 #	tplink-cli - Command line interface for TP-LINK smart switches
-#	Copyright (C) 2017-2022 Johannes Bauer
+#	Copyright (C) 2017-2024 Johannes Bauer
 #
 #	This file is part of tplink-cli.
 #
@@ -94,39 +94,39 @@ class FieldType(enum.IntEnum):
 
 class FieldData(object):
 	_FIELD_TYPES = {
-		FieldType.LoginUsername:				TPLinkString,
-		FieldType.LoginPassword:				TPLinkString,
-		FieldType.LoginOldPassword:				TPLinkString,
-		FieldType.LoginNewPassword:				TPLinkString,
-		FieldType.SwitchName:					TPLinkString,
-		FieldType.DeviceDescription:			TPLinkString,
-		FieldType.FirmwareVersion:				TPLinkString,
-		FieldType.HardwareVersion:				TPLinkString,
-		FieldType.PortCount:					TPLinkInt,
-		FieldType.MAC:							TPLinkMAC,
-		FieldType.DHCP:							TPLinkBool,
-		FieldType.IPAddress:					TPLinkIPv4,
-		FieldType.SubnetMask:					TPLinkIPv4,
-		FieldType.GatewayIPAddress:				TPLinkIPv4,
-		FieldType.PortSetting:					TPLinkPortSetting,
-		FieldType.MonitoringPortStatus:			TPLinkPortStatistics,
-		FieldType.PortMirroringConfig:			TPLinkMirroringConfig,
-		FieldType.LAGConfiguration:				TPLinkLagConfig,
-		FieldType.PortBasedVLANStatus:			TPLinkBool,
-		FieldType.PortBasedVLANConfig:			TPLinkPortBasedVLANConfig,
-		FieldType.PortBasedVLANPortCount:		TPLinkInt,
-		FieldType.VLAN802_1Q_Status:			TPLinkBool,
-		FieldType.VLAN802_1Q_Config:			TPLink802_1Q_VLANConfig,
-		FieldType.VLAN802_1Q_PortCount:			TPLinkInt,
-		FieldType.VLAN802_1Q_PVID_Setting:		TPLinkPVIDSetting,
-		FieldType.MTUVLANSetting:				TPLinkMTUVLANSetting,
-		FieldType.QoSConfigurationType:			TPLinkQoSPriorityType,
-		FieldType.QoSConfigurationPortBased:	TPLinkQoSPriority,
-		FieldType.BandwidthControlIngress:		TPLinkBandwidthControlSetting,
-		FieldType.BandwidthControlEgress:		TPLinkBandwidthControlSetting,
-		FieldType.StormControl:					TPLinkStormControl,
-		FieldType.CableTest:					TPLinkCableTest,
-		FieldType.LoopPrevention:				TPLinkBool,
+		FieldType.LoginUsername:							TPLinkString,
+		FieldType.LoginPassword:							TPLinkString,
+		FieldType.LoginOldPassword:							TPLinkString,
+		FieldType.LoginNewPassword:							TPLinkString,
+		FieldType.SwitchName:								TPLinkString,
+		FieldType.DeviceDescription:						TPLinkString,
+		FieldType.FirmwareVersion:							TPLinkString,
+		FieldType.HardwareVersion:							TPLinkString,
+		FieldType.PortCount:								TPLinkInt,
+		FieldType.MAC:										TPLinkMAC,
+		FieldType.DHCP:										TPLinkBool,
+		FieldType.IPAddress:								TPLinkIPv4,
+		FieldType.SubnetMask:								TPLinkIPv4,
+		FieldType.GatewayIPAddress:							TPLinkIPv4,
+		FieldType.PortSetting:								TPLinkPortSetting,
+		FieldType.MonitoringPortStatus:						TPLinkPortStatistics,
+		FieldType.PortMirroringConfig:						TPLinkMirroringConfig,
+		FieldType.LAGConfiguration:							TPLinkLagConfig,
+		FieldType.PortBasedVLANStatus:						TPLinkBool,
+		FieldType.PortBasedVLANConfig:						TPLinkPortBasedVLANConfig,
+		FieldType.PortBasedVLANPortCount:					TPLinkInt,
+		FieldType.VLAN802_1Q_Status:						TPLinkBool,
+		FieldType.VLAN802_1Q_Config:						TPLink802_1Q_VLANConfig,
+		FieldType.VLAN802_1Q_PortCount:						TPLinkInt,
+		FieldType.VLAN802_1Q_PVID_Setting:					TPLinkPVIDSetting,
+		FieldType.MTUVLANSetting:							TPLinkMTUVLANSetting,
+		FieldType.QoSConfigurationType:						TPLinkQoSPriorityType,
+		FieldType.QoSConfigurationPortBased:				TPLinkQoSPriority,
+		FieldType.BandwidthControlIngress:					TPLinkBandwidthControlSetting,
+		FieldType.BandwidthControlEgress:					TPLinkBandwidthControlSetting,
+		FieldType.StormControl:								TPLinkStormControl,
+		FieldType.CableTest:								TPLinkCableTest,
+		FieldType.LoopPrevention:							TPLinkBool,
 		FieldType.IGMPSnoopingStatus:						TPLinkBool,
 		FieldType.IGMPSnooping_ReportMessageSuppression:	TPLinkBool,
 		FieldType.MulticastIPTable:							TPLinkMulticastIPTable,
@@ -139,6 +139,13 @@ class FieldData(object):
 	@property
 	def ftype(self):
 		return self._ftype
+
+	@property
+	def ftypename(self):
+		if isinstance(self.ftype, enum.IntEnum):
+			return self.ftype.name
+		else:
+			return str(self.ftype)
 
 	@property
 	def interpreted_data(self):
@@ -212,7 +219,7 @@ class TPLinkPacket(object):
 		print(self)
 		print(self._header)
 		for field in self._fields:
-			print("  %s: %s" % (str(field.ftype), str(field.interpreted_data)))
+			print(f"  {field.ftypename}: {field.interpreted_data}")
 		print()
 
 	def __bytes__(self):

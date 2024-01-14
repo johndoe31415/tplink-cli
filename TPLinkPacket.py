@@ -182,13 +182,13 @@ class TPLinkPacket(object):
 
 		fields = [ ]
 		offset = cls._TPLinkHeaderStruct.size
-		while offset < len(msg):
+		while offset + 2 < len(msg):
 			fieldtype = (msg[offset + 0] << 8) | msg[offset + 1]
-			fieldlen = (msg[offset + 2] << 8) | msg[offset + 3]
-			fieldval = msg[offset + 4 : offset + 4 + fieldlen]
 			if (fieldtype == 0xffff):
 				# Exit
 				break
+			fieldlen = (msg[offset + 2] << 8) | msg[offset + 3]
+			fieldval = msg[offset + 4 : offset + 4 + fieldlen]
 			try:
 				resolved_type = FieldType(fieldtype)
 			except ValueError:

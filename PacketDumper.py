@@ -1,5 +1,5 @@
 #	tplink-cli - Command line interface for TP-LINK smart switches
-#	Copyright (C) 2017-2022 Johannes Bauer
+#	Copyright (C) 2017-2024 Johannes Bauer
 #
 #	This file is part of tplink-cli.
 #

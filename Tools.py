@@ -1,5 +1,5 @@
 #	tplink-cli - Command line interface for TP-LINK smart switches
-#	Copyright (C) 2017-2022 Johannes Bauer
+#	Copyright (C) 2017-2024 Johannes Bauer
 #
 #	This file is part of tplink-cli.
 #
@@ -21,8 +21,11 @@
 
 import socket
 import fcntl
+import re
+import subprocess
 
 class NetTools(object):
+	_IP_IPV4_ADDR_REGEX = re.compile(r"\s*inet (?P<addr>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/(?P<subnet>\d{1,2})")
 	@classmethod
 	def get_mac_address(cls, ifname):
 		SIOCGIFHWADDR = 0x8927
@@ -35,5 +38,9 @@ class NetTools(object):
 
 	@classmethod
 	def get_primary_ipv4_address(cls, ifname):
-#		return "172.16.0.131"
-		return "192.168.1.2"
+		stdout = subprocess.check_output([ "ip", "-4", "addr", "show", ifname, "label", ifname ]).decode("ascii")
+		rematch = cls._IP_IPV4_ADDR_REGEX.search(stdout)
+		if rematch is None:
+			raise ValueError(f"Unable to determine IPv4 address of interface {ifname}.")
+		rematch = rematch.groupdict()
+		return rematch["addr"]

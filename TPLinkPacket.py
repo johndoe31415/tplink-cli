@@ -217,7 +217,6 @@ class TPLinkPacket(object):
 
 	def dump(self):
 		print(self)
-		print(self._header)
 		for field in self._fields:
 			print(f"  {field.ftypename}: {field.interpreted_data}")
 		print()

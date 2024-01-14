@@ -1,5 +1,5 @@
 #	tplink-cli - Command line interface for TP-LINK smart switches
-#	Copyright (C) 2017-2022 Johannes Bauer
+#	Copyright (C) 2017-2024 Johannes Bauer
 #
 #	This file is part of tplink-cli.
 #
@@ -26,6 +26,7 @@ import queue
 
 from Tools import NetTools
 from TPLinkPacket import TPLinkPacket
+from Exceptions import ReceiveTimeoutException
 
 class TPLinkConnection(object):
 	_HOST_PORT = 29809
@@ -45,7 +46,6 @@ class TPLinkConnection(object):
 		sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 		sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 		sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-		print(ip_address, port)
 		sock.bind((ip_address, port))
 		return sock
 
@@ -67,7 +67,7 @@ class TPLinkConnection(object):
 		try:
 			return self._rx_msgs.get(timeout = timeout)
 		except queue.Empty:
-			raise Exception("RX timed out.")
+			raise ReceiveTimeoutException(f"Receive timed out after {timeout:.1f} secs.")
 
 	def send_recv(self, packet, recv_timeout = 1.0):
 		self.send(packet)

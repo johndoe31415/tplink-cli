@@ -1,5 +1,5 @@
 #	tplink-cli - Command line interface for TP-LINK smart switches
-#	Copyright (C) 2017-2024 Johannes Bauer
+#	Copyright (C) 2024-2024 Johannes Bauer
 #
 #	This file is part of tplink-cli.
 #
@@ -19,23 +19,5 @@
 #
 #	Johannes Bauer <JohannesBauer@gmx.de>
 
-from TPLinkPacket import TPLinkPacket, Opcode
-from ActionTPLinkConnection import ActionTPLinkConnection
-from Exceptions import ReceiveTimeoutException
-
-class ActionIdentify(ActionTPLinkConnection):
-	def __init__(self, cmd, args):
-		ActionTPLinkConnection.__init__(self, cmd, args)
-
-	def _run_action(self):
-		packet = TPLinkPacket.construct(Opcode.Discovery, host_mac = self._conn.host_mac)
-		responses = [ ]
-		while True:
-			try:
-				response = self._conn.send_recv(packet)
-			except ReceiveTimeoutException:
-				break
-			responses.append(response)
-		print(f"Found {len(responses)} device(s):")
-		for response in responses:
-			response.dump()
+class TPLinkCLIException(Exception): pass
+class ReceiveTimeoutException(TPLinkCLIException): pass

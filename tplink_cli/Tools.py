@@ -44,3 +44,17 @@ class NetTools(object):
 			raise ValueError(f"Unable to determine IPv4 address of interface {ifname}.")
 		rematch = rematch.groupdict()
 		return rematch["addr"]
+
+	@classmethod
+	def get_default_gateway_interface(cls):
+		with open("/proc/net/route") as f:
+			for (lineno, line) in enumerate(f, 1):
+				if lineno == 1:
+					continue
+				line = line.rstrip("\n").split("\t")
+				interface = line[0]
+				flags = int(line[3], 16)
+				if (flags & 3) == 3:
+					# Unicast, Gateway
+					return interface
+		raise ValueError("Unable to determine the interface pointing to a default gateway.")

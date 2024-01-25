@@ -32,7 +32,7 @@ class TPLinkConnection(object):
 	_HOST_PORT = 29809
 	_SWITCH_PORT = 29808
 
-	def __init__(self, interface):
+	def __init__(self, interface = None):
 		self._interface = interface
 		self._host_mac = NetTools.get_mac_address(self._interface)
 		self._txsocket = self._create_udp_socket(NetTools.get_primary_ipv4_address(self._interface), self._HOST_PORT)

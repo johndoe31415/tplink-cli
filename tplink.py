@@ -25,6 +25,7 @@ import sys
 from MultiCommand import MultiCommand
 from ActionTCPDump import ActionTCPDump
 from ActionIdentify import ActionIdentify
+from ActionSimulate import ActionSimulate
 
 mc = MultiCommand()
 
@@ -38,9 +39,9 @@ def genparser(parser):
 	parser.add_argument("--verbose", action = "store_true", help = "Increase logging verbosity.")
 mc.register("identify", "Identify all switches on the network", genparser, action = ActionIdentify)
 
+def genparser(parser):
+	parser.add_argument("-i", "--interface", metavar = "ifname", required = True, help = "Specify the network interface that switches should be looked for. Mandatory argument.")
+	parser.add_argument("--verbose", action = "store_true", help = "Increase logging verbosity.")
+mc.register("simulate", "Simulate a TP-LINK switch for debugging purposes", genparser, action = ActionSimulate)
+
 mc.run(sys.argv[1:])
-
-
-
-
-

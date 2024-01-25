@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #	tplink-cli - Command line interface for TP-LINK smart switches
-#	Copyright (C) 2017-2022 Johannes Bauer
+#	Copyright (C) 2017-2024 Johannes Bauer
 #
 #	This file is part of tplink-cli.
 #
@@ -25,9 +25,6 @@ import sys
 from MultiCommand import MultiCommand
 from ActionTCPDump import ActionTCPDump
 from ActionIdentify import ActionIdentify
-
-#msg1 = bytes.fromhex("5d746a047dbeb0b2fb61cbe62ca87fb8422ba2f5d78baeed508f463dc202909aa4ec81c6")
-#msg2 = bytes.fromhex("5d763ac3c2324177fb61cbe62ca87fb8422ba2f5d733aeed508f463dc202909a5b1281cc736606650ee8708fe1406926597b1866521ddc46082c330873e2f29d04e942304a2068b48c3a7d2e170f1a90e8f385c8ba32c3f0b7b5afad8ebcdc1b73ce374e8982a7e83ae6edf9cad4c9240da496f322edffa3dc8270b79fc2fc29e1fd8f5b65f82e6d8af3af2f6aef50e6ddc96ff446f1787c498fb7f7")
 
 mc = MultiCommand()
 

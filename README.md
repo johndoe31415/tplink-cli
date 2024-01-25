@@ -20,5 +20,15 @@ or directly dump live traffic:
 # tcpdump -lnX -i eth0 'udp and ((port 29809) or (port 29808))' | ./tplink.py tcpdump
 ```
 
+
+## Debugging
+Creating a localized dummy interface for sniffing purposes:
+
+```
+ip link add dummy0 type dummy
+ip addr add 192.168.123.55/24 dev dummy0
+ip link set dev dummy0 up
+```
+
 ## License
 GNU GPL-3

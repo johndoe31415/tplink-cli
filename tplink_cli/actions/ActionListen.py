@@ -22,11 +22,20 @@
 #from .TPLinkPacket import TPLinkPacket, Opcode
 #from .ActionTPLinkConnection import ActionTPLinkConnection
 #from .Exceptions import ReceiveTimeoutException
+import asyncio
 from ..Tools import NetTools
+from ..TPLinkInterface import TPLinkInterface
 from ..MultiCommand import BaseAction
+from ..RC4Packet import RC4Packet
 
 class ActionListen(BaseAction):
+	async def async_run(self):
+		async with TPLinkInterface(self._args.interface) as conn:
+			while True:
+				rx_pkt = await conn.recvdata()
+				rc4_pkt = RC4Packet.deserialize(rx_pkt.data)
+
+				print(rc4_pkt)
+
 	def run(self):
-		interface = self.args.interface or NetTools.get_default_gateway_interface()
-		ip_address = NetTools.get_primary_ipv4_address(interface)
-		print(interface, ip_address)
+		asyncio.run(self.async_run())

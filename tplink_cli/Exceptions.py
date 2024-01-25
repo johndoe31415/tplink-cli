@@ -20,4 +20,5 @@
 #	Johannes Bauer <JohannesBauer@gmx.de>
 
 class TPLinkCLIException(Exception): pass
+class DeserializationException(TPLinkCLIException): pass
 class ReceiveTimeoutException(TPLinkCLIException): pass

@@ -23,6 +23,7 @@ import socket
 import fcntl
 import re
 import subprocess
+import asyncio
 
 class NetTools(object):
 	_IP_IPV4_ADDR_REGEX = re.compile(r"\s*inet (?P<addr>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/(?P<subnet>\d{1,2})")

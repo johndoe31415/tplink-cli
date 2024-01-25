@@ -49,6 +49,7 @@ class FieldType(enum.IntEnum):
 	LoginPassword = 514
 	LoginOldPassword = 513
 	LoginNewPassword = 515
+	SwitchToRSAEncryption = 528
 
 	BackupConfiguration = 768
 	RestoreConfiguration = 769

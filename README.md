@@ -7,5 +7,18 @@ encrypted with a hardcoded RC4 key. I've done substantial reverse engineering
 work back in 2017 to figure out what the datagrams do, but right now it is not
 implemented to actually perform any useful commands via the CLI.
 
+## TCPDump facility
+To ease debugging, tplink-cli can interface directly with tcpdump PCAP files:
+
+```
+$ tcpdump -lnX -r tplink.pcapng 'udp and ((port 29809) or (port 29808))' | ./tplink.py tcpdump
+```
+
+or directly dump live traffic:
+
+```
+# tcpdump -lnX -i eth0 'udp and ((port 29809) or (port 29808))' | ./tplink.py tcpdump
+```
+
 ## License
 GNU GPL-3

@@ -23,9 +23,9 @@ import random
 import enum
 import struct
 import collections
-from TPLinkObfuscation import TPLinkObfuscation
-from HexDump import HexDump
-from TPLinkTypes import TPLinkData, TPLinkString, TPLinkBool, TPLinkMAC, TPLinkIPv4, TPLinkPortSetting, TPLinkPortStatistics, TPLinkMirroringConfig, TPLinkLagConfig, TPLinkInt, TPLinkPortBasedVLANConfig, TPLink802_1Q_VLANConfig, TPLinkPVIDSetting, TPLinkMTUVLANSetting, TPLinkBandwidthControlSetting, TPLinkQoSPriority, TPLinkQoSPriorityType, TPLinkStormControl, TPLinkCableTest, TPLinkMulticastIPTable
+from .TPLinkObfuscation import TPLinkObfuscation
+from .HexDump import HexDump
+from .TPLinkTypes import TPLinkData, TPLinkString, TPLinkBool, TPLinkMAC, TPLinkIPv4, TPLinkPortSetting, TPLinkPortStatistics, TPLinkMirroringConfig, TPLinkLagConfig, TPLinkInt, TPLinkPortBasedVLANConfig, TPLink802_1Q_VLANConfig, TPLinkPVIDSetting, TPLinkMTUVLANSetting, TPLinkBandwidthControlSetting, TPLinkQoSPriority, TPLinkQoSPriorityType, TPLinkStormControl, TPLinkCableTest, TPLinkMulticastIPTable
 
 class Opcode(enum.IntEnum):
 	Discovery = 0

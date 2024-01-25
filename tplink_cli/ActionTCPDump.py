@@ -19,23 +19,9 @@
 #
 #	Johannes Bauer <JohannesBauer@gmx.de>
 
-from TPLinkPacket import TPLinkPacket, Opcode
-from ActionTPLinkConnection import ActionTPLinkConnection
-from Exceptions import ReceiveTimeoutException
+from .PacketDumper import PacketDumper
 
-class ActionIdentify(ActionTPLinkConnection):
+class ActionTCPDump(object):
 	def __init__(self, cmd, args):
-		ActionTPLinkConnection.__init__(self, cmd, args)
-
-	def _run_action(self):
-		packet = TPLinkPacket.construct(Opcode.Discovery, host_mac = self._conn.host_mac)
-		responses = [ ]
-		while True:
-			try:
-				response = self._conn.send_recv(packet)
-			except ReceiveTimeoutException:
-				break
-			responses.append(response)
-		print(f"Found {len(responses)} device(s):")
-		for response in responses:
-			response.dump()
+		self._args = args
+		PacketDumper().parse_tcpdump_stdin()

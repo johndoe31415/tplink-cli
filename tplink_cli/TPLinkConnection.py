@@ -24,9 +24,9 @@ import fcntl
 import threading
 import queue
 
-from Tools import NetTools
-from TPLinkPacket import TPLinkPacket
-from Exceptions import ReceiveTimeoutException
+from .Tools import NetTools
+from .TPLinkPacket import TPLinkPacket
+from .Exceptions import ReceiveTimeoutException
 
 class TPLinkConnection(object):
 	_HOST_PORT = 29809

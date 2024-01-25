@@ -20,11 +20,11 @@
 #	Johannes Bauer <JohannesBauer@gmx.de>
 
 import socket
-from TPLinkPacket import TPLinkPacket, Opcode, FieldData, FieldType
-from TPLinkTypes import TPLinkString
-from ActionTPLinkConnection import ActionTPLinkConnection
-from Exceptions import ReceiveTimeoutException
-from Tools import NetTools
+from .TPLinkPacket import TPLinkPacket, Opcode, FieldData, FieldType
+from .TPLinkTypes import TPLinkString
+from .ActionTPLinkConnection import ActionTPLinkConnection
+from .Exceptions import ReceiveTimeoutException
+from .Tools import NetTools
 
 class ActionSimulate(ActionTPLinkConnection):
 	def _run_action(self):

@@ -1,5 +1,5 @@
 #	tplink-cli - Command line interface for TP-LINK smart switches
-#	Copyright (C) 2017-2022 Johannes Bauer
+#	Copyright (C) 2017-2024 Johannes Bauer
 #
 #	This file is part of tplink-cli.
 #
@@ -19,7 +19,7 @@
 #
 #	Johannes Bauer <JohannesBauer@gmx.de>
 
-class RC4(object):
+class RC4():
 	def __init__(self, key):
 		self._sbox = self._key_schedule(key)
 		self._i = 0
@@ -58,4 +58,3 @@ if __name__ == "__main__":
 	rc4 = RC4(bytes.fromhex("1ada31d5cf688221c109163908ebe51debb46227c6cc8b37641910833222772a"))
 	rc4.next_bytes(4096)
 	assert(rc4.next_bytes(16) == bytes.fromhex("37 0b 1c 1f  e6 55 91 6d   97 fd 0d 47  ca 1d 72 b8"))
-

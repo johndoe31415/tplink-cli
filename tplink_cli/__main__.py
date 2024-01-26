@@ -27,6 +27,7 @@ def main():
 #	from .ActionTCPDump import ActionTCPDump
 #	from .ActionIdentify import ActionIdentify
 #	from .ActionSimulate import ActionSimulate
+	from .actions.ActionReadPCAPNG import ActionReadPCAPNG
 	from .actions.ActionListen import ActionListen
 
 	mc = MultiCommand(description = "Interact with TP-LINK switches on a command line basis.", run_method = True)
@@ -35,6 +36,11 @@ def main():
 		parser.add_argument("-i", "--interface", metavar = "ifname", help = "Specify the network interface that switches should be looked for. If not given, default to interface that points towards the default gateway.")
 		parser.add_argument("--verbose", action = "count", default = 0, help = "Increase verbosity. Can be given multiple times.")
 	mc.register("listen", "Listen for TP-LINK traffic on a particular interface", genparser, action = ActionListen)
+
+	def genparser(parser):
+		parser.add_argument("--verbose", action = "count", default = 0, help = "Increase verbosity. Can be given multiple times.")
+		parser.add_argument("filename", help = "PCAPNG file to read")
+	mc.register("pcapng", "Read a PCAPNG file and show its decoded contents", genparser, action = ActionReadPCAPNG, aliases = [ "read" ])
 
 #	def genparser(parser):
 #		parser.add_argument("--verbose", action = "store_true", help = "Increase logging verbosity.")

@@ -19,8 +19,10 @@
 #
 #	Johannes Bauer <JohannesBauer@gmx.de>
 
+import ipaddress
 import dataclasses
 from .Enums import FieldTag
+from .MACAddress import MACAddress
 
 @dataclasses.dataclass
 class TPLinkRawData():
@@ -33,6 +35,11 @@ class TPLinkRawData():
 	def __bytes__(self):
 		return self.value
 
+	def __repr__(self):
+		if len(self.value) == 0:
+			return f"TPLinkRawData<>"
+		else:
+			return f"TPLinkRawData<{len(self.value)}: {self.value.hex()}>"
 
 @dataclasses.dataclass
 class TPLinkString():
@@ -45,6 +52,66 @@ class TPLinkString():
 	def __bytes__(self):
 		return self.value.encode("ascii") + "\x00"
 
+@dataclasses.dataclass
+class TPLinkInt():
+	value: int = 0
+
+	@classmethod
+	def deserialize(cls, payload):
+		print(payload)
+		return cls(value = int.from_bytes(payload, byteorder = "big"))
+
+	def __bytes__(self):
+		TODO
+		return self.value.encode("ascii") + "\x00"
+
+@dataclasses.dataclass
+class TPLinkBool():
+	value: bool = False
+
+	@classmethod
+	def deserialize(cls, payload):
+		return cls(value = (len(payload) > 0) and (payload[0] != 0))
+
+	def __bytes__(self):
+		return bytes([ int(self.value) ])
+
+@dataclasses.dataclass
+class TPLinkMAC():
+	value: MACAddress = MACAddress(bytes(6))
+
+	@classmethod
+	def deserialize(cls, payload):
+		return cls(value = MACAddress(payload))
+
+	def __bytes__(self):
+		return bytes(self.value)
+
+@dataclasses.dataclass
+class TPLinkPVIDSetting():
+	port: int = 0
+	pvid: int = 0
+
+	@classmethod
+	def deserialize(cls, payload):
+		if len(payload) == 0:
+			# For requests of this field, it's empty
+			return cls()
+		return cls(port = payload[0], pvid = int.from_bytes(payload[1 : 4], byteorder = "big"))
+
+	def __bytes__(self):
+		return self.port.to_bytes(byteorder = "big", length = 1) + self.pvid.to_bytes(byteorder = "big", length = 3)
+
+@dataclasses.dataclass
+class TPLinkIPv4():
+	value: ipaddress.IPv4Address
+
+	@classmethod
+	def deserialize(cls, payload):
+		return cls(value = ipaddress.IPv4Address(payload))
+
+	def __bytes__(self):
+		return self.value.packed
 
 def get_handler_class(tag):
 	return {
@@ -56,23 +123,23 @@ def get_handler_class(tag):
 		FieldTag.DeviceDescription:							TPLinkString,
 		FieldTag.FirmwareVersion:							TPLinkString,
 		FieldTag.HardwareVersion:							TPLinkString,
-#		FieldTag.PortCount:									TPLinkInt,
-#		FieldTag.MAC:										TPLinkMAC,
-#		FieldTag.DHCP:										TPLinkBool,
-#		FieldTag.IPAddress:									TPLinkIPv4,
-#		FieldTag.SubnetMask:								TPLinkIPv4,
-#		FieldTag.GatewayIPAddress:							TPLinkIPv4,
+		FieldTag.PortCount:									TPLinkInt,
+		FieldTag.MAC:										TPLinkMAC,
+		FieldTag.DHCP:										TPLinkBool,
+		FieldTag.IPAddress:									TPLinkIPv4,
+		FieldTag.SubnetMask:								TPLinkIPv4,
+		FieldTag.GatewayIPAddress:							TPLinkIPv4,
 #		FieldTag.PortSetting:								TPLinkPortSetting,
 #		FieldTag.MonitoringPortStatus:						TPLinkPortStatistics,
 #		FieldTag.PortMirroringConfig:						TPLinkMirroringConfig,
 #		FieldTag.LAGConfiguration:							TPLinkLagConfig,
-#		FieldTag.PortBasedVLANStatus:						TPLinkBool,
+		FieldTag.PortBasedVLANStatus:						TPLinkBool,
 #		FieldTag.PortBasedVLANConfig:						TPLinkPortBasedVLANConfig,
-#		FieldTag.PortBasedVLANPortCount:					TPLinkInt,
-#		FieldTag.VLAN802_1Q_Status:							TPLinkBool,
+		FieldTag.PortBasedVLANPortCount:					TPLinkInt,
+		FieldTag.VLAN802_1Q_Status:							TPLinkBool,
 #		FieldTag.VLAN802_1Q_Config:							TPLink802_1Q_VLANConfig,
-#		FieldTag.VLAN802_1Q_PortCount:						TPLinkInt,
-#		FieldTag.VLAN802_1Q_PVID_Setting:					TPLinkPVIDSetting,
+		FieldTag.VLAN802_1Q_PortCount:						TPLinkInt,
+		FieldTag.VLAN802_1Q_PVID_Setting:					TPLinkPVIDSetting,
 #		FieldTag.MTUVLANSetting:							TPLinkMTUVLANSetting,
 #		FieldTag.QoSConfigurationType:						TPLinkQoSPriorityType,
 #		FieldTag.QoSConfigurationPortBased:					TPLinkQoSPriority,
@@ -80,8 +147,8 @@ def get_handler_class(tag):
 #		FieldTag.BandwidthControlEgress:					TPLinkBandwidthControlSetting,
 #		FieldTag.StormControl:								TPLinkStormControl,
 #		FieldTag.CableTest:									TPLinkCableTest,
-#		FieldTag.LoopPrevention:							TPLinkBool,
-#		FieldTag.IGMPSnoopingStatus:						TPLinkBool,
-#		FieldTag.IGMPSnooping_ReportMessageSuppression:		TPLinkBool,
+		FieldTag.LoopPrevention:							TPLinkBool,
+		FieldTag.IGMPSnoopingStatus:						TPLinkBool,
+		FieldTag.IGMPSnooping_ReportMessageSuppression:		TPLinkBool,
 #		FieldTag.MulticastIPTable:							TPLinkMulticastIPTable,
 	}.get(tag, TPLinkRawData)

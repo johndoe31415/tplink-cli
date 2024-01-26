@@ -39,6 +39,7 @@ class FieldTag(enum.IntEnum):
 	HardwareVersion = 8
 	DHCP = 9
 	PortCount = 10
+	DeviceSupportsEncryption = 16
 	LoginUsername = 512
 	LoginPassword = 514
 	LoginOldPassword = 513

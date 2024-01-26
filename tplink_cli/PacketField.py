@@ -47,6 +47,12 @@ class PacketField():
 	def dump(self, prefix = ""):
 		print(f"{prefix}{str(self)}")
 
+	def __bytes__(self):
+		tag_bytes = int(self.tag).to_bytes(length = 2, byteorder = "big")
+		value = bytes(self.value)
+		length_bytes = len(value).to_bytes(length = 2, byteorder = "big")
+		return tag_bytes + length_bytes + value
+
 	def __repr__(self):
 		return f"{self.tag_str} = {self.value}"
 
@@ -54,8 +60,15 @@ class PacketFields():
 	def __init__(self):
 		self._fields = [ ]
 
+	def clear(self):
+		self._fields = [ ]
+
 	def append(self, field: PacketField):
 		self._fields.append(field)
+
+	def append_all(self, fields: list[PacketField]):
+		for field in fields:
+			self.append(field)
 
 	@classmethod
 	def deserialize(cls, payload):
@@ -84,6 +97,9 @@ class PacketFields():
 		if offset + 4 != len(payload):
 			raise DeserializationException(f"TLV packet has trailing garbage data, length {len(payload)} bytes but finished at offset {offset}.")
 		return fields
+
+	def __bytes__(self):
+		return b"".join(bytes(field) for field in self._fields) + bytes.fromhex("ffff 0000")
 
 	def __iter__(self):
 		return iter(self._fields)

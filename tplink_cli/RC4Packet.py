@@ -79,6 +79,24 @@ class RC4Packet():
 		field_dict["payload"] = PacketFields.deserialize(payload_data)
 		return cls(**field_dict)
 
+	def serialize_plaintext(self):
+		payload = bytes(self.payload)
+
+		header_dict = dataclasses.asdict(self)
+		del header_dict["auto_compute_length"]
+		del header_dict["payload"]
+		header_dict["switch_mac"] = bytes(header_dict["switch_mac"])
+		header_dict["host_mac"] = bytes(header_dict["host_mac"])
+		if self.auto_compute_length:
+			header_dict["length"] = self._HEADER_DEFINITION.size + len(payload)
+		header = self._HEADER_DEFINITION.pack(header_dict)
+
+		return header + payload
+
+	def serialize(self):
+		plaintext = self.serialize_plaintext()
+		return TPLinkObfuscation.obfuscate(plaintext)
+
 	def dump(self):
 		for field in dataclasses.fields(self):
 			if not field.repr:

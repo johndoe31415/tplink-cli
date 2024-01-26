@@ -24,6 +24,7 @@ import contextlib
 from ..MultiCommand import BaseAction
 from ..RC4Packet import RC4Packet
 from ..Exceptions import DeserializationException
+from ..TPLinkObfuscation import TPLinkObfuscation
 
 class ActionReadPCAPNG(BaseAction):
 	def run(self):
@@ -47,4 +48,10 @@ class ActionReadPCAPNG(BaseAction):
 				with contextlib.suppress(DeserializationException):
 					rc4_pkt = RC4Packet.deserialize(payload)
 					rc4_pkt.dump()
+					if self._args.validate_serialization:
+						reserialized = rc4_pkt.serialize()
+						if reserialized != payload:
+							print("WARNING: Packet reserialization mismatch.")
+							print(f"Original packet: {TPLinkObfuscation.deobfuscate(payload)}")
+							print(f"Reserialized   : {TPLinkObfuscation.deobfuscate(reserialized)}")
 					print()

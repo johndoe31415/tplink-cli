@@ -40,10 +40,11 @@ class TPLinkInterface():
 	_HOST_PORT = 29809
 	_SWITCH_PORT = 29808
 
-	def __init__(self, interface = None):
+	def __init__(self, interface = None, act_as_host = True):
 		self._interface = interface
 		if self._interface is None:
 			self._interface = NetTools.get_default_gateway_interface()
+		self._act_as_host = act_as_host
 		self._host_mac = NetTools.get_mac_address(self._interface)
 		self._host_ip = NetTools.get_primary_ipv4_address(self._interface)
 		self._txsocket = None
@@ -62,22 +63,27 @@ class TPLinkInterface():
 	def host_ip(self):
 		return self._host_ip
 
+	@property
+	def local_port(self):
+		if self._act_as_host:
+			return self._HOST_PORT
+		else:
+			return self._SWITCH_PORT
+
 	async def __aenter__(self, *args):
 		loop = asyncio.get_event_loop()
-		(self._endpoint_transport, self._endpoint_protocol) = await loop.create_datagram_endpoint(lambda: TPLinkProtocol(self), sock = self._create_udp_socket("0.0.0.0", self._HOST_PORT))
-#		print(dir(self._endpoint_transport))
-#		print(dir(self._endpoint_protocol))
-		self._txsocket = self._create_udp_socket(self._host_ip, self._HOST_PORT)
+		(self._endpoint_transport, self._endpoint_protocol) = await loop.create_datagram_endpoint(lambda: TPLinkProtocol(self), sock = self._create_udp_socket("0.0.0.0", self.local_port))
+		self._txsocket = self._create_udp_socket(self._host_ip, self.local_port)
 		return self
 
 	async def __aexit__(self, *args):
 		self._endpoint_transport.close()
 		self._txsocket.close()
 
-	def _rx_packet(self, rxmsg):
+	def _rx_packet(self, rxmsg: TPLinkProtocol.RXMsg):
 		asyncio.run_coroutine_threadsafe(self._rx_queue.put(rxmsg), asyncio.get_event_loop())
 
-	async def recvdata(self, timeout = None):
+	async def recvdata(self, timeout: float | None = None):
 		if timeout is not None:
 			try:
 				return await asyncio.wait_for(self._rx_queue.get(), timeout = timeout)
@@ -86,6 +92,9 @@ class TPLinkInterface():
 		else:
 			return await self._rx_queue.get()
 
+	def send(self, data: bytes, host: str, port: int):
+		self._txsocket.sendto(data, (host, port))
+
 	@staticmethod
 	def _create_udp_socket(ip_address, port):
 		sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -93,29 +102,3 @@ class TPLinkInterface():
 		sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 		sock.bind((ip_address, port))
 		return sock
-
-#	def _receive_thread(self):
-#		while True:
-#			msg = self._rxsocket.recv(4096)
-#			packet = TPLinkPacket.deserialize(msg)
-#			self._rx_msgs.put(packet)
-#
-#	@property
-#	def host_mac(self):
-#		return self._host_mac
-#
-#	def send(self, packet):
-#		packet = bytes(packet)
-#		self._txsocket.sendto(packet, ("255.255.255.255", self._SWITCH_PORT))
-#
-#	def recv(self, timeout = 1.0):
-#		try:
-#			return self._rx_msgs.get(timeout = timeout)
-#		except queue.Empty:
-#			raise ReceiveTimeoutException(f"Receive timed out after {timeout:.1f} secs.")
-#
-#	def send_recv(self, packet, recv_timeout = 1.0):
-#		self.send(packet)
-#		return self.recv(recv_timeout)
-#
-#	def close(self):

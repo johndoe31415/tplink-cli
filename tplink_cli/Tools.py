@@ -24,6 +24,7 @@ import fcntl
 import re
 import subprocess
 import asyncio
+from .MACAddress import MACAddress
 
 class NetTools(object):
 	_IP_IPV4_ADDR_REGEX = re.compile(r"\s*inet (?P<addr>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/(?P<subnet>\d{1,2})")
@@ -35,7 +36,7 @@ class NetTools(object):
 		ifname = ifname.encode().ljust(256, b"\x00")
 		info = fcntl.ioctl(fd, SIOCGIFHWADDR,  ifname)
 		mac = info[18 : 18 + 6]
-		return mac
+		return MACAddress(mac)
 
 	@classmethod
 	def get_primary_ipv4_address(cls, ifname):

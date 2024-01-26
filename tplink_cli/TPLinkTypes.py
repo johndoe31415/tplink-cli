@@ -50,7 +50,10 @@ class TPLinkString():
 		return cls(value = payload.decode("ascii").rstrip("\x00"))
 
 	def __bytes__(self):
-		return self.value.encode("ascii") + "\x00"
+		if len(self.value) == 0:
+			return bytes()
+		else:
+			return self.value.encode("ascii") + bytes(1)
 
 @dataclasses.dataclass
 class TPLinkInt():
@@ -58,12 +61,30 @@ class TPLinkInt():
 
 	@classmethod
 	def deserialize(cls, payload):
+		TODO
 		print(payload)
 		return cls(value = int.from_bytes(payload, byteorder = "big"))
 
 	def __bytes__(self):
 		TODO
 		return self.value.encode("ascii") + "\x00"
+
+
+@dataclasses.dataclass
+class TPLinkBigint():
+	value: int = 0
+
+	@classmethod
+	def deserialize(cls, payload):
+		return cls(value = int.from_bytes(payload[2 :], byteorder = "little"))
+
+	def __bytes__(self):
+		# Stored as short limbs with a redundant prefix indicating the limb
+		# count
+		limb_count = (self.value.bit_length() + 15) // 16
+		byte_count = limb_count * 2
+		return limb_count.to_bytes(byteorder = "big", length = 2) + self.value.to_bytes(byteorder = "little", length = byte_count)
+
 
 @dataclasses.dataclass
 class TPLinkBool():
@@ -124,6 +145,7 @@ def get_handler_class(tag):
 		FieldTag.FirmwareVersion:							TPLinkString,
 		FieldTag.HardwareVersion:							TPLinkString,
 		FieldTag.PortCount:									TPLinkInt,
+		FieldTag.DeviceSupportsEncryption:					TPLinkBool,
 		FieldTag.MAC:										TPLinkMAC,
 		FieldTag.DHCP:										TPLinkBool,
 		FieldTag.IPAddress:									TPLinkIPv4,
@@ -151,4 +173,5 @@ def get_handler_class(tag):
 		FieldTag.IGMPSnoopingStatus:						TPLinkBool,
 		FieldTag.IGMPSnooping_ReportMessageSuppression:		TPLinkBool,
 #		FieldTag.MulticastIPTable:							TPLinkMulticastIPTable,
+		FieldTag.SwitchToRSAEncryption:						TPLinkBigint,
 	}.get(tag, TPLinkRawData)
